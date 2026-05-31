@@ -8,7 +8,13 @@
     return;
   }
 
-  var sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey);
+  var sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey, {
+    auth: {
+      detectSessionInUrl: true,
+      persistSession: true,
+      flowType: "implicit"
+    }
+  });
   var loginScreen = document.getElementById("login-screen");
   var appShell = document.getElementById("app-shell");
   var loginForm = document.getElementById("login-form");
@@ -63,7 +69,14 @@
         showApp();
       })
       .catch(function (err) {
-        loginMsg.textContent = err.message || "Falha no login";
+        var msg = err.message || "Falha no login";
+        if (msg.indexOf("Invalid login credentials") !== -1) {
+          msg = "E-mail ou senha incorretos. Use “Esqueci a senha” se precisar redefinir.";
+        }
+        if (msg.indexOf("Email not confirmed") !== -1) {
+          msg = "E-mail ainda não confirmado — use “Esqueci a senha” ou peça novo link.";
+        }
+        loginMsg.textContent = msg;
         loginMsg.className = "msg error";
       })
       .finally(function () {
@@ -89,13 +102,65 @@
     if (el) el.textContent = val != null ? String(val) : "0";
   }
 
-  sb.auth.getSession().then(function (res) {
-    if (res.data.session) showApp();
-    else showLogin();
+  var forgotBtn = document.getElementById("forgot-btn");
+  if (forgotBtn) {
+    forgotBtn.addEventListener("click", function () {
+      var email = document.getElementById("email").value.trim();
+      if (!email) {
+        loginMsg.textContent = "Digite seu e-mail acima e clique em Esqueci a senha.";
+        loginMsg.className = "msg error";
+        return;
+      }
+      loginMsg.textContent = "Enviando link de redefinição…";
+      loginMsg.className = "msg";
+      forgotBtn.disabled = true;
+      sb.auth.resetPasswordForEmail(email, { redirectTo: "https://vitoroliv.com" })
+        .then(function (res) {
+          if (res.error) throw res.error;
+          loginMsg.textContent = "Link enviado! Confira o e-mail (e spam). Depois entre com a nova senha.";
+          loginMsg.className = "msg ok";
+        })
+        .catch(function (err) {
+          loginMsg.textContent = err.message || "Não foi possível enviar o link.";
+          loginMsg.className = "msg error";
+        })
+        .finally(function () { forgotBtn.disabled = false; });
+    });
+  }
+
+  function handleAuthCallback() {
+    var hash = window.location.hash || "";
+    var params = new URLSearchParams(window.location.search);
+    var isCallback = hash.indexOf("access_token") !== -1 ||
+      hash.indexOf("type=recovery") !== -1 ||
+      params.get("code") ||
+      params.get("error_description");
+    if (!isCallback) return Promise.resolve(false);
+    return sb.auth.getSession().then(function (res) {
+      if (res.data.session) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        showApp();
+        return true;
+      }
+      if (params.get("error_description")) {
+        loginMsg.textContent = decodeURIComponent(params.get("error_description"));
+        loginMsg.className = "msg error";
+      }
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return false;
+    });
+  }
+
+  handleAuthCallback().then(function (handled) {
+    if (handled) return;
+    sb.auth.getSession().then(function (res) {
+      if (res.data.session) showApp();
+      else showLogin();
+    });
   });
 
   sb.auth.onAuthStateChange(function (event, session) {
-    if (event === "SIGNED_IN" && session) showApp();
+    if ((event === "SIGNED_IN" || event === "PASSWORD_RECOVERY") && session) showApp();
     if (event === "SIGNED_OUT") showLogin();
   });
 })();

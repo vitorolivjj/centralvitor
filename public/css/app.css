@@ -94,6 +94,8 @@ body {
 .msg { margin-top: 12px; font-size: 0.85rem; min-height: 1.2em; }
 .msg.error { color: #f87171; }
 .msg.ok { color: var(--accent); }
+.hint { margin-top: 8px; font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+.forgot-link { margin-top: 10px; width: 100%; }
 
 /* App shell */
 #app-shell { min-height: 100vh; display: flex; flex-direction: column; }
