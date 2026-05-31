@@ -2,83 +2,114 @@
 <html lang="pt-br">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Central Vitor</title>
-  <meta name="description" content="Central Vitor — em breve.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>VitorOS</title>
+  <meta name="description" content="Cockpit operacional — vitoroliv.com">
+  <meta name="theme-color" content="#0a0f1c">
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
-  <style>
-    :root { color-scheme: dark; }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: radial-gradient(1200px 600px at 50% -10%, #1b2a4a, #0a0f1c);
-      color: #e8eefc;
-      overflow: hidden;
-    }
-    .card {
-      text-align: center;
-      padding: 48px 28px;
-      max-width: 560px;
-      animation: rise .7s ease both;
-    }
-    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-    .badge {
-      display: inline-block;
-      padding: 6px 14px;
-      border: 1px solid #2c63ff55;
-      border-radius: 999px;
-      color: #8fb0ff;
-      font-size: 13px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-    h1 {
-      font-size: clamp(36px, 8vw, 64px);
-      margin: 18px 0 12px;
-      font-weight: 800;
-      background: linear-gradient(90deg, #7aa2ff, #c9d6ff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    p { color: #a9b6d4; font-size: 18px; line-height: 1.55; }
-    .status {
-      margin-top: 22px;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 18px;
-      border-radius: 999px;
-      background: #0f1830;
-      border: 1px solid #1e2c4f;
-      font-size: 15px;
-      color: #cdd8f3;
-    }
-    .dot {
-      width: 9px; height: 9px; border-radius: 50%;
-      background: #36d399;
-      box-shadow: 0 0 0 0 #36d39966;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 #36d39966; }
-      70% { box-shadow: 0 0 0 12px #36d39900; }
-      100% { box-shadow: 0 0 0 0 #36d39900; }
-    }
-    .foot { margin-top: 28px; color: #5f6f93; font-size: 14px; }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-  <main class="card">
-    <span class="badge">vitoroliv.com</span>
-    <h1>Central Vitor</h1>
-    <p>Estamos preparando tudo por aqui.<br>Em breve os painéis vão aparecer neste espaço.</p>
-    <div class="status"><span class="dot"></span> Servidor no ar · configuração em andamento</div>
-    <div class="foot">© <span id="y"></span> Vitor Oliveira</div>
-  </main>
-  <script>document.getElementById("y").textContent = new Date().getFullYear();</script>
+  <!-- Login -->
+  <div id="login-screen">
+    <div class="login-card">
+      <h1>VitorOS</h1>
+      <p>Cockpit operacional · vitoroliv.com</p>
+      <form id="login-form">
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input id="email" type="email" autocomplete="username" required placeholder="seu@email.com">
+        </div>
+        <div class="field">
+          <label for="password">Senha</label>
+          <input id="password" type="password" autocomplete="current-password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary" id="login-btn">Entrar</button>
+      </form>
+      <p class="msg" id="login-msg"></p>
+    </div>
+  </div>
+
+  <!-- App -->
+  <div id="app-shell" class="hidden">
+    <header class="topbar">
+      <div class="brand">VitorOS <span>cockpit</span></div>
+      <nav class="layer-tabs" aria-label="Camadas">
+        <button type="button" class="layer-tab active" data-layer="1">Macro</button>
+        <button type="button" class="layer-tab" data-layer="2">Operacional</button>
+        <button type="button" class="layer-tab" data-layer="3">Mapa</button>
+      </nav>
+      <button type="button" class="btn btn-ghost btn-sm" id="logout-btn">Sair</button>
+    </header>
+
+    <main class="main">
+      <!-- Camada 1 — Visão Macro -->
+      <section id="layer-1" class="layer-panel active">
+        <h2 class="panel-title">Visão Macro</h2>
+        <p class="panel-desc">Estado atual das frentes — leitura em ~10 segundos.</p>
+        <div class="kpi-grid" id="kpi-grid">
+          <div class="kpi"><div class="kpi-val" id="kpi-projetos">—</div><div class="kpi-lbl">Projetos ativos</div></div>
+          <div class="kpi"><div class="kpi-val" id="kpi-tasks">—</div><div class="kpi-lbl">Tasks abertas</div></div>
+          <div class="kpi"><div class="kpi-val" id="kpi-criticas">—</div><div class="kpi-lbl">Críticas</div></div>
+          <div class="kpi"><div class="kpi-val" id="kpi-rabiscos">—</div><div class="kpi-lbl">Rabiscos soltos</div></div>
+          <div class="kpi"><div class="kpi-val" id="kpi-sugestoes">—</div><div class="kpi-lbl">Sugestões Negão</div></div>
+        </div>
+        <div class="card">
+          <h3>Ações propostas pelo Negão</h3>
+          <p id="sugestoes-placeholder">Nenhuma sugestão pendente. (Integração TASK-021)</p>
+        </div>
+        <div class="card">
+          <h3>Alertas</h3>
+          <p>Motor de alertas entra na TASK-015. KPIs acima vêm do <code>snapshot_estado()</code>.</p>
+        </div>
+      </section>
+
+      <!-- Camada 2 — Gestão Operacional -->
+      <section id="layer-2" class="layer-panel">
+        <h2 class="panel-title">Gestão Operacional</h2>
+        <p class="panel-desc">Projetos, tasks, rabiscos, finanças — TASK-011 em diante.</p>
+        <div class="placeholder-grid">
+          <div class="placeholder-item">📝 Rabiscos</div>
+          <div class="placeholder-item">📁 Projetos</div>
+          <div class="placeholder-item">✅ Tasks Kanban</div>
+          <div class="placeholder-item">💰 Finanças</div>
+          <div class="placeholder-item">🎯 Objetivos</div>
+          <div class="placeholder-item">🔗 Atalhos</div>
+        </div>
+      </section>
+
+      <!-- Camada 3 — Mapa Estrutural -->
+      <section id="layer-3" class="layer-panel">
+        <h2 class="panel-title">Mapa das Frentes</h2>
+        <p class="panel-desc">Como as frentes se conectam — visão estrutural.</p>
+        <div class="map-hub">
+          <div class="center-node">Vitor · Negão</div>
+          <div class="map-spokes">
+            <span class="map-spoke">Laboratório</span>
+            <span class="map-spoke">VS Rota</span>
+            <span class="map-spoke">Consultoria</span>
+            <span class="map-spoke">AppVS</span>
+            <span class="map-spoke">Finanças</span>
+            <span class="map-spoke">Saúde Familiar</span>
+            <span class="map-spoke">Sítio</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Camadas mobile">
+      <button type="button" data-layer="1" class="active">Macro</button>
+      <button type="button" data-layer="2">Operação</button>
+      <button type="button" data-layer="3">Mapa</button>
+    </nav>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.min.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

@@ -5,6 +5,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 echo "==> git pull..."
 git pull --ff-only origin main
+echo "==> gerando config.js..."
+chmod +x deploy/gen-config.sh
+./deploy/gen-config.sh
 echo "==> recarregando nginx..."
 nginx -t && systemctl reload nginx
-echo "✅ Central Vitor atualizado."
+echo "✅ VitorOS atualizado."
