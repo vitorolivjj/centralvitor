@@ -164,6 +164,21 @@ body {
 }
 .kpi-val { font-size: 1.75rem; font-weight: 800; color: var(--accent); }
 .kpi-lbl { font-size: 0.75rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+.kpi-warn .kpi-val { color: var(--warn); }
+
+.atencao-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.atencao-list li { font-size: 0.9rem; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); }
+.atencao-warn { border-color: var(--warn) !important; color: var(--warn); background: rgba(250, 204, 21, 0.08); }
+.atencao-info { color: var(--muted); }
+.atencao-ok { color: var(--accent); border: none; padding: 0; }
+#atencao-card.has-warn { border-color: var(--warn); }
+
+.coluna-bars { display: flex; flex-direction: column; gap: 8px; }
+.col-bar { display: grid; grid-template-columns: 88px 1fr 28px; align-items: center; gap: 8px; font-size: 0.82rem; }
+.col-lbl { color: var(--muted); }
+.col-track { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+.col-fill { height: 100%; background: var(--accent); border-radius: 4px; min-width: 2px; }
+.col-n { text-align: right; color: var(--dim); font-weight: 600; }
 
 .card {
   background: var(--bg-card);

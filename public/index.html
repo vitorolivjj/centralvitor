@@ -56,17 +56,22 @@
         <div class="kpi-grid" id="kpi-grid">
           <div class="kpi"><div class="kpi-val" id="kpi-projetos">—</div><div class="kpi-lbl">Projetos ativos</div></div>
           <div class="kpi"><div class="kpi-val" id="kpi-tasks">—</div><div class="kpi-lbl">Tasks abertas</div></div>
+          <div class="kpi kpi-warn"><div class="kpi-val" id="kpi-exec">—</div><div class="kpi-lbl">Em execução</div></div>
           <div class="kpi"><div class="kpi-val" id="kpi-criticas">—</div><div class="kpi-lbl">Críticas</div></div>
           <div class="kpi"><div class="kpi-val" id="kpi-rabiscos">—</div><div class="kpi-lbl">Rabiscos soltos</div></div>
           <div class="kpi"><div class="kpi-val" id="kpi-sugestoes">—</div><div class="kpi-lbl">Sugestões Negão</div></div>
+        </div>
+        <div class="card" id="atencao-card">
+          <h3>Atenção agora</h3>
+          <ul id="atencao-list" class="atencao-list"></ul>
         </div>
         <div class="card">
           <h3>Ações propostas pelo Negão</h3>
           <p id="sugestoes-placeholder">Nenhuma sugestão pendente. (Integração TASK-021)</p>
         </div>
         <div class="card">
-          <h3>Alertas</h3>
-          <p>Motor de alertas entra na TASK-015. KPIs acima vêm do <code>snapshot_estado()</code>.</p>
+          <h3>Tasks por coluna</h3>
+          <div id="coluna-bars" class="coluna-bars"></div>
         </div>
       </section>
 

@@ -97,10 +97,51 @@
       var d = res.data;
       setKpi("kpi-projetos", d.projetos_ativos);
       setKpi("kpi-tasks", d.tasks_abertas);
+      setKpi("kpi-exec", d.tasks_executando);
       setKpi("kpi-criticas", d.tasks_criticas);
       setKpi("kpi-rabiscos", d.rabiscos_soltos);
       setKpi("kpi-sugestoes", d.sugestoes_pendentes);
+      renderAtencao(d.atencao || []);
+      renderColunas(d.por_coluna || {});
+      var sug = document.getElementById("sugestoes-placeholder");
+      if (sug) {
+        var n = d.sugestoes_pendentes || 0;
+        sug.textContent = n > 0 ? n + " sugestão(ões) pendente(s)." : "Nenhuma sugestão pendente. (Integração TASK-021)";
+      }
     });
+  }
+
+  function renderAtencao(items) {
+    var ul = document.getElementById("atencao-list");
+    var card = document.getElementById("atencao-card");
+    if (!ul) return;
+    if (!items.length) {
+      ul.innerHTML = "<li class=\"atencao-ok\">Tudo sob controle — nada crítico agora.</li>";
+      return;
+    }
+    ul.innerHTML = items.map(function (it) {
+      return "<li class=\"atencao-" + (it.nivel || "info") + "\">" + escHtml(it.texto) + "</li>";
+    }).join("");
+    if (card) card.classList.toggle("has-warn", items.some(function (i) { return i.nivel === "warn"; }));
+  }
+
+  function renderColunas(cols) {
+    var el = document.getElementById("coluna-bars");
+    if (!el) return;
+    var order = ["Backlog", "Planejando", "Executando", "Revisão", "Concluído", "Arquivado"];
+    var max = 1;
+    order.forEach(function (k) { if ((cols[k] || 0) > max) max = cols[k]; });
+    el.innerHTML = order.map(function (k) {
+      var n = cols[k] || 0;
+      var pct = Math.round((n / max) * 100);
+      return "<div class=\"col-bar\"><span class=\"col-lbl\">" + escHtml(k) + "</span>" +
+        "<div class=\"col-track\"><div class=\"col-fill\" style=\"width:" + pct + "%\"></div></div>" +
+        "<span class=\"col-n\">" + n + "</span></div>";
+    }).join("");
+  }
+
+  function escHtml(s) {
+    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;");
   }
 
   function setKpi(id, val) {
