@@ -73,15 +73,30 @@
       <!-- Camada 2 — Gestão Operacional -->
       <section id="layer-2" class="layer-panel">
         <h2 class="panel-title">Gestão Operacional</h2>
-        <p class="panel-desc">Projetos, tasks, rabiscos, finanças — TASK-011 em diante.</p>
-        <div class="placeholder-grid">
-          <div class="placeholder-item">📝 Rabiscos</div>
-          <div class="placeholder-item">📁 Projetos</div>
-          <div class="placeholder-item">✅ Tasks Kanban</div>
-          <div class="placeholder-item">💰 Finanças</div>
-          <div class="placeholder-item">🎯 Objetivos</div>
-          <div class="placeholder-item">🔗 Atalhos</div>
+        <p class="panel-desc">Tasks, rabiscos e projetos — captura e organização.</p>
+
+        <nav class="op-tabs" aria-label="Módulos operacionais">
+          <button type="button" class="op-tab active" data-op="tasks">Tasks</button>
+          <button type="button" class="op-tab" data-op="rabiscos">Rabiscos</button>
+          <button type="button" class="op-tab" data-op="projetos">Projetos</button>
+        </nav>
+
+        <div id="op-panel-tasks">
+          <div class="kanban-wrap">
+            <div id="kanban-board" class="kanban-board" aria-label="Kanban de tasks"></div>
+          </div>
         </div>
+
+        <div id="op-panel-rabiscos" class="hidden">
+          <div id="rabiscos-list" class="rabiscos-list"></div>
+        </div>
+
+        <div id="op-panel-projetos" class="hidden">
+          <div id="projetos-list" class="projetos-grid"></div>
+        </div>
+
+        <p id="op-toast" class="op-toast hidden" role="status"></p>
+        <button type="button" class="fab" id="fab-add" aria-label="Nova task">+</button>
       </section>
 
       <!-- Camada 3 — Mapa Estrutural -->
@@ -110,8 +125,95 @@
     </nav>
   </div>
 
+  <!-- Modal CRUD operacional -->
+  <div id="modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="modal-title">Editar</h3>
+        <button type="button" class="btn btn-ghost btn-sm" id="modal-close" aria-label="Fechar">✕</button>
+      </div>
+      <form id="modal-form">
+        <div id="modal-task-fields">
+          <div class="field">
+            <label for="modal-titulo">Título</label>
+            <input id="modal-titulo" required maxlength="200">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="modal-status">Coluna</label>
+              <select id="modal-status">
+                <option>Backlog</option>
+                <option>Planejando</option>
+                <option>Executando</option>
+                <option>Revisão</option>
+                <option>Concluído</option>
+                <option>Arquivado</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="modal-prioridade">Prioridade</label>
+              <select id="modal-prioridade">
+                <option value="alta">Alta</option>
+                <option value="media">Média</option>
+                <option value="baixa">Baixa</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="modal-projeto-id">Projeto</label>
+            <select id="modal-projeto-id"></select>
+          </div>
+          <div class="field">
+            <label for="modal-observacoes">Observações</label>
+            <textarea id="modal-observacoes" rows="3"></textarea>
+          </div>
+        </div>
+        <div id="modal-rabisco-fields" class="hidden">
+          <div class="field">
+            <label for="modal-rabisco-titulo">Título</label>
+            <input id="modal-rabisco-titulo" maxlength="120">
+          </div>
+          <div class="field">
+            <label for="modal-rabisco-texto">Texto</label>
+            <textarea id="modal-rabisco-texto" rows="4" placeholder="Captura rápida…"></textarea>
+          </div>
+        </div>
+        <div id="modal-projeto-fields" class="hidden">
+          <div class="field">
+            <label for="modal-projeto-nome">Nome</label>
+            <input id="modal-projeto-nome" maxlength="120">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="modal-projeto-status">Status</label>
+              <select id="modal-projeto-status">
+                <option>Ideia</option>
+                <option>Ativo</option>
+                <option>Pausado</option>
+                <option>Concluído</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="modal-projeto-frente">Frente</label>
+              <input id="modal-projeto-frente" placeholder="Ex.: Laboratório">
+            </div>
+          </div>
+          <div class="field">
+            <label for="modal-projeto-desc">Descrição</label>
+            <textarea id="modal-projeto-desc" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="modal-delete">Excluir</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src="js/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.min.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/operacional.js"></script>
 </body>
 </html>

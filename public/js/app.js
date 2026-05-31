@@ -30,6 +30,12 @@
     loginScreen.classList.add("hidden");
     appShell.classList.remove("hidden");
     loadSnapshot();
+    if (window.VitorOSOperacional && !showApp._opInit) {
+      window.VitorOSOperacional.init(sb);
+      showApp._opInit = true;
+    } else if (window.VitorOSOperacional) {
+      window.VitorOSOperacional.refresh();
+    }
   }
 
   function setLayer(n) {
@@ -163,4 +169,6 @@
     if ((event === "SIGNED_IN" || event === "PASSWORD_RECOVERY") && session) showApp();
     if (event === "SIGNED_OUT") showLogin();
   });
+
+  window.VitorOSApp = { loadSnapshot: loadSnapshot, getClient: function () { return sb; } };
 })();
